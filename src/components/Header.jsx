@@ -30,7 +30,7 @@ const Header = ({ searchMovies }) => {
       </nav>
 
       <div className="input-group rounded">
-        <Link to="/" onClick={(e) => searchMovies('')} className="search-link" >
+        <Link to="/"  className="search-link" >
           <input type="search" data-testid="search-movies"
             onKeyUp={(e) => searchMovies(e.target.value)} 
             className="form-control rounded" 

@@ -1,0 +1,24 @@
+.modal-backdrop {
+    display: fixed;
+    left: 0;
+    top: 0;
+    background-color: rgba(0,0,0,0.8);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.modal-cancel-btn {
+    position: absolute;
+    top: -40px;
+    right: 0px;
+    color: #fff;
+}
