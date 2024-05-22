@@ -43,7 +43,7 @@ const useFetchMoreMovies = (initialData) => {
     const monitorRef = loaderRef.current;
     const observer = new IntersectionObserver((entries) => {
       const target = entries[0];
-      if (target.isIntersecting && initialData.length > 0 && !isLoading) {
+      if (target.isIntersecting && initialData?.length > 0 && !isLoading) {
         getMoreMovies();
       }
     });

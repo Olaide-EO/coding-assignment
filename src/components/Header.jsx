@@ -3,11 +3,13 @@ import { useSelector } from "react-redux";
 import { debounce } from "../utils/commonFunctions";
 import "../styles/header.scss";
 
-const Header = ({ searchMovies }) => {
+const Header = ({ searchMovies, setSearchParams }) => {
   const { starredMovies } = useSelector((state) => state.starred);
 
   const handleInputChange = debounce((e) => {
-    searchMovies(e.target.value);
+    const searchInput = e.target.value;
+    searchMovies(searchInput);
+    setSearchParams(searchInput ? { search: searchInput } : {});
   }, 500);
 
   return (
