@@ -1,4 +1,4 @@
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Routes,
   Route,
@@ -26,8 +26,7 @@ import "./app.scss";
 const App = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const { movies } = useSelector((state) => state.movies);
+  const { movies, fetchStatus } = useSelector((state) => state.movies);
   const [searchParams, setSearchParams] = useSearchParams();
   const searchQuery = searchParams.get("search");
 
@@ -35,8 +34,6 @@ const App = () => {
   const [isOpen, setOpen] = useState(false);
 
   const closeModal = () => setOpen(false);
-
-  const closeCard = () => {};
 
   const getSearchResults = (query) => {
     if (query !== "") {
@@ -54,12 +51,13 @@ const App = () => {
   };
 
   const getMovies = () => {
+    if (fetchStatus === "loading") return;
     if (searchQuery) {
       dispatch(fetchMovies(`${ENDPOINT_SEARCH}?query=${searchQuery}&page=1`));
     } else {
       dispatch(fetchMovies(`${ENDPOINT_DISCOVER}?page=1`));
     }
-  }
+  };
 
   const viewTrailer = (movie) => {
     getMovie(movie.id);
@@ -71,13 +69,17 @@ const App = () => {
     const URL = `${ENDPOINT}/movie/${id}?api_key=${API_KEY}&append_to_response=videos`;
 
     setVideoKey(null);
-    const videoData = await fetch(URL).then((response) => response.json());
+    try {
+      const videoData = await fetch(URL).then((response) => response.json());
 
-    if (videoData.videos && videoData.videos.results.length) {
-      const trailer = videoData.videos.results.find(
-        (vid) => vid.type === "Trailer"
-      );
-      setVideoKey(trailer ? trailer.key : videoData.videos.results[0].key);
+      if (videoData.videos && videoData.videos.results.length) {
+        const trailer = videoData.videos.results.find(
+          (vid) => vid.type === "Trailer"
+        );
+        setVideoKey(trailer ? trailer.key : videoData.videos.results[0].key);
+      }
+    } catch (error) {
+      console.error("Error fetching movie data:", error);
     }
   };
 
@@ -102,13 +104,7 @@ const App = () => {
         <Routes>
           <Route
             path="/"
-            element={
-              <Movies
-                movies={movies}
-                viewTrailer={viewTrailer}
-                closeCard={closeCard}
-              />
-            }
+            element={<Movies movies={movies} viewTrailer={viewTrailer} />}
           />
           <Route
             path="/starred"
