@@ -2,10 +2,10 @@ import Movie from "./Movie";
 import useFetchMoreMovies from "../hooks/useFetchMoreMovies";
 import "../styles/movies.scss";
 
-const Movies = ({ movies, viewTrailer, closeCard }) => {
+const Movies = ({ movies, viewTrailer }) => {
   const { data, loaderRef } = useFetchMoreMovies(movies?.results);
 
-  if (!movies?.results) return null;
+  if (!movies) return null;
 
   return (
     <div data-testid="movies">
@@ -16,7 +16,6 @@ const Movies = ({ movies, viewTrailer, closeCard }) => {
               movie={movie}
               key={movie.id}
               viewTrailer={viewTrailer}
-              closeCard={closeCard}
             />
           );
         })}
