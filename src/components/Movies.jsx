@@ -5,8 +5,6 @@ import "../styles/movies.scss";
 const Movies = ({ movies, viewTrailer }) => {
   const { data, loaderRef } = useFetchMoreMovies(movies?.results);
 
-  if (!movies) return null;
-
   return (
     <div data-testid="movies">
       <div className="movie-list">
