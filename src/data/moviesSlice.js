@@ -1,27 +1,21 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { ENDPOINT, API_KEY } from "../constants";
+import { token } from "../constants";
+import { getSingleMovieUrl } from "../urls/movies";
 
-/*
-I generated a new token for the purpose of this demo
-The endpoint has been updated, it now require {Bearer Token} to be passed in the header
-check https://developer.themoviedb.org/reference/discover-movie for more information.
-*/
-
-export const token =
-  "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMTUzZGY3Njc0OTE1NDFhODdhYWU1ZDg5MjJmNWQ1NSIsInN1YiI6IjY2NDY3YjA0ZGVmMjcwNTg5Y2E5MGE1NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.y71quUtq5frJzB8_ojpiStM3z5NevDbF244pVWEN30c";
-
-export const fetchMovies = createAsyncThunk("fetch-movies", async (apiUrl) => {
-  const response = await fetch(apiUrl, {
+const authCall = async (apiUrl) =>
+  await fetch(apiUrl, {
     headers: { Authorization: `Bearer ${token}` },
   });
+
+export const fetchMovies = createAsyncThunk("fetch-movies", async (apiUrl) => {
+  const response = await authCall(apiUrl);
   return response.json();
 });
 
 export const fetchSingleMovie = async (id) => {
-  const URL = `${ENDPOINT}/movie/${id}?api_key=${API_KEY}&append_to_response=videos`;
-
+  const apiUrl = getSingleMovieUrl(id);
   try {
-    const videoData = await fetch(URL).then((response) => response.json());
+    const videoData = await (await authCall(apiUrl)).json();
 
     if (videoData.videos && videoData.videos.results.length) {
       const trailer = videoData.videos.results.find(
@@ -39,12 +33,17 @@ const moviesSlice = createSlice({
   initialState: {
     movies: [],
     fetchStatus: "",
+    page: 1,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchMovies.fulfilled, (state, action) => {
-        state.movies = action.payload;
+        state.movies =
+          action.payload.page === 1
+            ? action.payload.results
+            : [...state.movies, ...action.payload.results];
+        state.page = action.payload.page + 1;
         state.fetchStatus = "success";
       })
       .addCase(fetchMovies.pending, (state) => {

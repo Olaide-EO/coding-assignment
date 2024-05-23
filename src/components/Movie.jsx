@@ -3,7 +3,7 @@ import starredSlice from "../data/starredSlice";
 import watchLaterSlice from "../data/watchLaterSlice";
 import placeholder from "../assets/not-found-500X750.jpeg";
 
-const Movie = ({ movie, viewTrailer }) => {
+const Movie = ({ movie, viewTrailer, testid }) => {
   const state = useSelector((state) => state);
   const { starred, watchLater } = state;
   const { starMovie, unstarMovie } = starredSlice.actions;
@@ -103,12 +103,13 @@ const Movie = ({ movie, viewTrailer }) => {
               type="button"
               className="btn btn-dark"
               onClick={handleViewTrailer}
+              data-testid="view-trailer"
             >
               View Trailer
             </button>
           </div>
           <img
-            className="center-block"
+            className="center-block movie-image"
             src={
               movie.poster_path
                 ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}`

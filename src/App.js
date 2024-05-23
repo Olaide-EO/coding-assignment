@@ -59,6 +59,7 @@ const App = () => {
   }, []);
 
   return (
+    <>
     <div className="App">
       <Header
         searchMovies={getSearchResults}
@@ -91,6 +92,7 @@ const App = () => {
         </Routes>
       </div>
     </div>
+    </>
   );
 };
 
