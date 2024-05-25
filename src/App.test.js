@@ -29,7 +29,6 @@ it('renders watch later component', async() => {
   expect(screen.getByText(/You have no movies saved to watch later/i)).toBeInTheDocument()
 })
 
-
 it('renders starred component', async() => {
   renderWithProviders(<App />)
   const user = userEvent.setup()
