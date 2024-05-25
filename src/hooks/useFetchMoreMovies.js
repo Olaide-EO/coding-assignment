@@ -1,32 +1,45 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { getMoviesUrl, getSearchMoviesUrl } from "../urls/movies";
+import { authCall } from "../data/moviesSlice";
 
-const useFetchMoreMovies = (initialData, getMoreMovies) => {
-  const loaderRef = useRef(null);
+const useFetchMoreMovies = (movies) => {
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get("search");
+  const [data, setData] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(2);
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
-    const monitorRef = loaderRef.current;
-    const observer = new IntersectionObserver((entries) => {
-      const target = entries[0];
-      if (
-        target.isIntersecting &&
-        initialData?.length > 0
-      ) {
-        getMoreMovies();
-      }
-    });
+    setData(movies?.results);
+    setPage(movies?.page + 1);
+    setTotalPages(movies?.total_pages);
+  }, [movies]);
 
-    if (monitorRef) {
-      observer.observe(monitorRef);
+  const getMoreMovies = useCallback(async () => {
+    if (page >= totalPages) return;
+    setLoading(true);
+
+    let URL = searchQuery
+      ? getSearchMoviesUrl(page, searchQuery)
+      : getMoviesUrl(page);
+    try {
+      const moviesData = await (await authCall(URL)).json();
+
+      if (moviesData?.results) {
+        setData((prevData) => [...prevData, ...moviesData.results]);
+        setPage(moviesData?.page + 1);
+        setTotalPages(moviesData?.total_pages);
+      }
+    } catch (error) {
+      console.error("Error fetching more movies:", error);
+    } finally {
+      setLoading(false);
     }
+  }, [page, searchQuery, totalPages]);
 
-    return () => {
-      if (monitorRef) {
-        observer.unobserve(monitorRef);
-      }
-    };
-  }, [loaderRef, getMoreMovies, initialData]);
-
-  return { loaderRef };
+  return { getMoreMovies, isLoading, data, page, totalPages };
 };
 
 export default useFetchMoreMovies;

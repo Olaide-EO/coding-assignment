@@ -3,14 +3,13 @@ import { useSelector } from "react-redux";
 import { debounce } from "../utils/commonFunctions";
 import "../styles/header.scss";
 
-const Header = ({ searchMovies, setSearchParams }) => {
+const Header = ({ searchMovies }) => {
   const { starredMovies } = useSelector((state) => state.starred);
 
   const handleInputChange = debounce((e) => {
     const searchInput = e.target.value;
     searchMovies(searchInput);
-    setSearchParams(searchInput ? { search: searchInput } : {});
-  }, 500);
+  }, 100);
 
   return (
     <header>
@@ -39,11 +38,11 @@ const Header = ({ searchMovies, setSearchParams }) => {
       </nav>
 
       <div className="input-group rounded">
-        <Link to="/" className="search-link">
+        <Link to="/" onClick={() => searchMovies('')} className="search-link">
           <input
             type="search"
             data-testid="search-movies"
-            onKeyUp={handleInputChange}
+            onChange={handleInputChange}
             className="form-control rounded"
             placeholder="Search movies..."
             aria-label="Search movies"

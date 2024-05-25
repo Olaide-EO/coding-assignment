@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { token } from "../constants";
 import { getSingleMovieUrl } from "../urls/movies";
 
-const authCall = async (apiUrl) =>
+export const authCall = async (apiUrl) =>
   await fetch(apiUrl, {
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -33,17 +33,12 @@ const moviesSlice = createSlice({
   initialState: {
     movies: [],
     fetchStatus: "",
-    page: 1,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchMovies.fulfilled, (state, action) => {
-        state.movies =
-          action.payload.page === 1
-            ? action.payload.results
-            : [...state.movies, ...action.payload.results];
-        state.page = action.payload.page + 1;
+        state.movies = action.payload;
         state.fetchStatus = "success";
       })
       .addCase(fetchMovies.pending, (state) => {

@@ -1,44 +1,28 @@
-import { useCallback } from "react";
-import { useSearchParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchMovies } from "../data/moviesSlice";
 import Movie from "./Movie";
-import { getMoviesUrl, getSearchMoviesUrl } from "../urls/movies";
+import useInfiniteScroll from "../hooks/useInfiniteScroll";
 import useFetchMoreMovies from "../hooks/useFetchMoreMovies";
 import "../styles/movies.scss";
 
 const Movies = ({ movies, viewTrailer }) => {
-  const dispatch = useDispatch();
-  const [searchParams] = useSearchParams();
-  const searchQuery = searchParams.get("search");
-  const { page } = useSelector((state) => state.movies);
-
-  const getMoreMovies = useCallback(() => {
-    let URL = searchQuery
-      ? getSearchMoviesUrl(page, searchQuery)
-      : getMoviesUrl(page);
-
-    dispatch(fetchMovies(URL));
-  }, [searchQuery, page, dispatch]);
-
-  const { loaderRef } = useFetchMoreMovies(movies, getMoreMovies);
+  const { getMoreMovies, data, isLoading, page, totalPages } =
+    useFetchMoreMovies(movies);
+  const { loaderRef } = useInfiniteScroll(
+    movies?.results,
+    getMoreMovies,
+    isLoading
+  );
 
   return (
     <div data-testid="movies">
       <div className="movie-list">
-        {movies?.map((movie, index) => {
+        {data?.map((movie) => {
           return (
-            <Movie
-              movie={movie}
-              key={movie.id}
-              viewTrailer={viewTrailer}
-              testid={`movie-card-${index}`}
-            />
+            <Movie movie={movie} key={movie.id} viewTrailer={viewTrailer} />
           );
         })}
       </div>
 
-      {movies.length > 0 && (
+      {data?.length > 0 && totalPages > page && (
         <div ref={loaderRef}>
           <div>loading...</div>
         </div>

@@ -1,20 +1,24 @@
-import { screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { renderWithProviders } from "./utils";
-import App from "../App";
+import { screen, render } from "@testing-library/react";
+import Modal from "../components/Modal";
 
-it("display movie preview modal", async () => {
-  renderWithProviders(<App />);
+const renderModal = (props = { }) => (
+  <Modal {...props}>Content</Modal>
+);
 
-  const viewMovieTrailerButton = screen.getByTestId("view-trailer");
-
-  await waitFor(() => {
-    expect(viewMovieTrailerButton).toBeInTheDocument();
+describe("Modal", () => {
+  it("should not crash", () => {
+    expect(() => render(renderModal())).not.toThrow();
   });
 
-  await userEvent.click(viewMovieTrailerButton);
+  it("should render content when isVisible is true", () => {
+    render(renderModal({ isVisible: true }));
 
-  await waitFor(() => {
-    expect(screen.getByTestId("preview-modal")).toBeInTheDocument();
+    expect(screen.getByText("Content")).toBeInTheDocument();
+  });
+
+  it("should not render content when isVisible is false", () => {
+    render(renderModal({ isVisible: false }));
+
+    expect(() => screen.getByText("Content")).toThrow();
   });
 });

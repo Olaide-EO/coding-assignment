@@ -1,10 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
-import {
-  Routes,
-  Route,
-  useSearchParams,
-} from "react-router-dom";
+import { Routes, Route, useSearchParams, createSearchParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import "reactjs-popup/dist/index.css";
 import { fetchMovies, fetchSingleMovie } from "./data/moviesSlice";
@@ -19,6 +15,7 @@ import "./app.scss";
 
 const App = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate()
   const { movies } = useSelector((state) => state.movies);
   const [searchParams, setSearchParams] = useSearchParams();
   const searchQuery = searchParams.get("search");
@@ -30,10 +27,17 @@ const App = () => {
   const getSearchResults = (query) => {
     if (query) {
       dispatch(fetchMovies(`${ENDPOINT_SEARCH}?query=${query}`));
+      setSearchParams(createSearchParams({ search: query }))
     } else {
       dispatch(fetchMovies(ENDPOINT_DISCOVER));
+      setSearchParams()
     }
   };
+
+  const searchMovies = (query) => {
+    navigate('/')
+    getSearchResults(query)
+  }
 
   const getMovies = () => {
     if (searchQuery) {
@@ -60,38 +64,38 @@ const App = () => {
 
   return (
     <>
-    <div className="App">
-      <Header
-        searchMovies={getSearchResults}
-        searchParams={searchParams}
-        setSearchParams={setSearchParams}
-      />
-      {isOpen && (
-        <Modal onClose={closeModal}>
+      <div className="App">
+        <Header
+          searchMovies={searchMovies}
+          searchParams={searchParams}
+          setSearchParams={setSearchParams}
+        />
+
+        <Modal onClose={closeModal} isVisible={isOpen}>
           <YouTubePlayer videoKey={videoKey} />
         </Modal>
-      )}
-      <div className="container">
-        <Routes>
-          <Route
-            path="/"
-            element={<Movies movies={movies} viewTrailer={viewTrailer} />}
-          />
-          <Route
-            path="/starred"
-            element={<Starred viewTrailer={viewTrailer} />}
-          />
-          <Route
-            path="/watch-later"
-            element={<WatchLater viewTrailer={viewTrailer} />}
-          />
-          <Route
-            path="*"
-            element={<h1 className="not-found">Page Not Found</h1>}
-          />
-        </Routes>
+
+        <div className="container">
+          <Routes>
+            <Route
+              path="/"
+              element={<Movies movies={movies} viewTrailer={viewTrailer} />}
+            />
+            <Route
+              path="/starred"
+              element={<Starred viewTrailer={viewTrailer} />}
+            />
+            <Route
+              path="/watch-later"
+              element={<WatchLater viewTrailer={viewTrailer} />}
+            />
+            <Route
+              path="*"
+              element={<h1 className="not-found">Page Not Found</h1>}
+            />
+          </Routes>
+        </div>
       </div>
-    </div>
     </>
   );
 };
