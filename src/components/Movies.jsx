@@ -4,8 +4,9 @@ import useFetchMoreMovies from "../hooks/useFetchMoreMovies";
 import "../styles/movies.scss";
 
 const Movies = ({ movies, viewTrailer }) => {
-  const { getMoreMovies, data, isLoading, page, totalPages } =
+  const { getMoreMovies, data, isLoading, hasMorePages } =
     useFetchMoreMovies(movies);
+    
   const { loaderRef } = useInfiniteScroll(
     movies?.results,
     getMoreMovies,
@@ -22,7 +23,7 @@ const Movies = ({ movies, viewTrailer }) => {
         })}
       </div>
 
-      {data?.length > 0 && totalPages > page && (
+      {hasMorePages && (
         <div ref={loaderRef}>
           <div>loading...</div>
         </div>

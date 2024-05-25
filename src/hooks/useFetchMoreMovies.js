@@ -39,7 +39,9 @@ const useFetchMoreMovies = (movies) => {
     }
   }, [page, searchQuery, totalPages]);
 
-  return { getMoreMovies, isLoading, data, page, totalPages };
+  const hasMorePages = data?.length > 0 && totalPages > page
+
+  return { getMoreMovies, isLoading, data, page, totalPages, hasMorePages };
 };
 
 export default useFetchMoreMovies;
