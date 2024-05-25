@@ -1,7 +1,8 @@
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
 import starredSlice from "../data/starredSlice";
 import Movie from "./Movie";
+import ActionButton from "./ActionButton";
+import EmptyState from "./EmptyState";
 import "../styles/starred.scss";
 
 const Starred = ({ viewTrailer }) => {
@@ -22,23 +23,15 @@ const Starred = ({ viewTrailer }) => {
               <Movie movie={movie} key={movie.id} viewTrailer={viewTrailer} />
             ))}
           </div>
-
-          <footer className="text-center">
-            <button className="btn btn-primary" onClick={handleClearAllStared}>
-              Remove all starred
-            </button>
-          </footer>
+          <ActionButton
+            buttonText="Remove all starred"
+            onClick={handleClearAllStared}
+          />
         </div>
       )}
 
       {starred.starredMovies.length === 0 && (
-        <div className="text-center empty-cart">
-          <i className="bi bi-star" />
-          <p>There are no starred movies.</p>
-          <p>
-            Go to <Link to="/">Home</Link>
-          </p>
-        </div>
+        <EmptyState description="There are no starred movies." />
       )}
     </div>
   );

@@ -1,7 +1,8 @@
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
 import watchLaterSlice from "../data/watchLaterSlice";
 import Movie from "./Movie";
+import ActionButton from "./ActionButton";
+import EmptyState from "./EmptyState";
 import "../styles/starred.scss";
 
 const WatchLater = ({ viewTrailer }) => {
@@ -22,26 +23,15 @@ const WatchLater = ({ viewTrailer }) => {
               <Movie movie={movie} key={movie.id} viewTrailer={viewTrailer} />
             ))}
           </div>
-
-          <footer className="text-center">
-            <button
-              className="btn btn-primary"
-              onClick={handleRemoveAllWatchLater}
-            >
-              Empty list
-            </button>
-          </footer>
+          <ActionButton
+            buttonText="Empty list"
+            onClick={handleRemoveAllWatchLater}
+          />
         </div>
       )}
 
       {watchLater.watchLaterMovies.length === 0 && (
-        <div className="text-center empty-cart">
-          <i className="bi bi-heart" />
-          <p>You have no movies saved to watch later.</p>
-          <p>
-            Go to <Link to="/">Home</Link>
-          </p>
-        </div>
+        <EmptyState description="You have no movies saved to watch later." />
       )}
     </div>
   );
